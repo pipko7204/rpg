@@ -8,8 +8,10 @@ const spriteH = 48;
 const shots = 3;
 let cycle = 0;
 
-let pY = 276;
-let pX = 276;
+console.log('###: convas.height', canvas.height);
+
+let pY = (canvas.height - spriteH) / 2 ;
+let pX = (canvas.width - spriteW) / 2;
 
 let bottomPressed = false;
 let upPressed = false;
@@ -24,13 +26,13 @@ function keyDownHandler(e) {
     direction = 0;
   } else if (e.key === 'Up' || e.key === 'ArrowUp') {
     upPressed = true;
-    direction = 144;
+    direction = spriteH * 3;
   } else if (e.key === 'Left' || e.key === 'ArrowLeft') {
     leftPressed = true;
-    direction = 48;
+    direction = spriteH;
   } else if (e.key === 'Right' || e.key === 'ArrowRight') {
     rightPressed = true;
-    direction = 96;
+    direction = spriteH * 2;
   }
 }
 
@@ -68,18 +70,18 @@ img.addEventListener('load', () => {
       cycle = (cycle + 1) % shots;
     }
 
-    if (pX > 552) {
+    if (pX > canvas.width - spriteW) {
       pX -= 10;
     } else if (pX < 0) {
       pX += 10;
     }
-    if (pY > 552) {
+    if (pY > canvas.height - spriteH) {
       pY -= 10;
     } else if (pY < 0) {
       pY += 10;
     }
 
-    ctx.clearRect(0, 0, 600, 600);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, cycle * spriteW, direction, spriteW, spriteH, pX, pY, 48, 48);
   }, 120);
 });
