@@ -1,39 +1,58 @@
-class ClientWorld {
+import PositionedObject from '../common/PositionedObject';
+import ClientCell from './ClientCell';
+class ClientWorld extends PositionedObject {
   constructor(game, engine, levelCfg) {
+    super();
+
+    const worldHeight = levelCfg.map.length;
+    const worldWidth = levelCfg.map[0].length;
+    const cellSize = engine.canvas.height / levelCfg.camera.height;
+
     Object.assign(this, {
       game,
       engine,
       levelCfg,
-      height: levelCfg.map.length,
-      width: levelCfg.map[0].length,
+      height: worldHeight * cellSize,
+      width: worldWidth * cellSize,
+      worldHeight,
+      worldWidth,
+      cellWidth: cellSize,
+      cellHeight: cellSize,
+      map: [],
     });
-
-    this.spritesType = 'grass'
-
   }
 
-
-
   init() {
-    for (let spriteX = 0; spriteX < 13; spriteX++) {
-      for (let spriteY = 0; spriteY < 13; spriteY++) {
-        if (spriteX === 0 || spriteY === 0 || spriteX === 12 || spriteY === 12) {
-          this.spritesType = 'wall'
-        } else if (spriteY === 8) {
-          this.spritesType = 'water'
-        } else {
-          this.spritesType = 'grass'
+    const { levelCfg, map, worldWidth, worldHeight } = this;
+
+    for (let row = 0; row < worldHeight; row++) {
+      for (let col = 0; col < worldWidth; col++) {
+        if (!map[row]) {
+          map[row] = [];
         }
-        this.engine.renderSpriteFraim({
-          sprite: ['terrain', this.spritesType],
-          frame: 0,
-          x: spriteX * 48,
-          y: spriteY * 48,
-          w: 48,
-          h: 48,
+
+        map[row][col] = new ClientCell({
+          world: this,
+          cellCol: col,
+          cellRow: row,
+          cellCfg: levelCfg.map[row][col],
         });
       }
     }
+  }
+
+  render(time) {
+    const { map, worldWidth, worldHeight } = this;
+
+    for (let row = 0; row < worldHeight; row++) {
+      for (let col = 0; col < worldWidth; col++) {
+        map[row][col].render(time);
+      }
+    }
+  }
+
+  cellAt(col, row) {
+    return this.map[row] && this.map[row][col];
   }
 }
 
